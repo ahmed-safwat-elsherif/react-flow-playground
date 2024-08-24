@@ -1,13 +1,10 @@
-import React, { useCallback, useState } from "react";
+import { useState } from "react";
 import {
   ReactFlow,
   Node,
   Edge,
-  useNodesState,
-  useEdgesState,
   addEdge,
   Background,
-  BackgroundVariant,
   Controls,
   applyNodeChanges,
   applyEdgeChanges,
@@ -15,37 +12,46 @@ import {
   EdgeChange,
   NodeTypes,
   NodeChange,
+  EdgeTypes,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
+import "./override.css";
 import CustomNode, { CustomNodeType } from "./CustomNode";
+import CustomEdge from "./CustomEdge";
+import { Box } from "@mui/material";
 
-const initialNodes: Node<CustomNodeType["data"]>[] = [
+const initialNodes: CustomNodeType[] = [
   {
     id: "1",
-    position: { x: 0, y: 0 },
+    position: { x: 0, y: 100 },
     data: { value: 1 },
-    type: "textUpdater",
+    type: "custom-node",
   },
-  { id: "2", position: { x: 0, y: 100 }, data: { label: "4" } },
   {
-    id: "3",
-    position: { x: 10, y: 10 },
+    id: "2",
+    position: { x: 200, y: 100 },
     data: { value: 2 },
-    type: "textUpdater",
+    type: "custom-node",
   },
 ];
-const initialEdges: Edge[] = [{ id: "e1-2", source: "1", target: "2" }];
 
 const nodeTypes: NodeTypes = {
-  textUpdater: CustomNode,
+  "custom-node": CustomNode,
 };
 
+const edgeTypes: EdgeTypes = {
+  "custom-edge": CustomEdge,
+};
+const initialEdges: Edge[] = [
+  { id: "e1-2", source: "1", target: "2", type: "custom-edge" },
+];
+
 const ReactFlowPlayground = () => {
-  const [nodes, setNodes] = useState(initialNodes);
+  const [nodes, setNodes] = useState<CustomNodeType[]>(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
 
-  const onNodesChange = (nds: NodeChange[]) => {
+  const onNodesChange = (nds: NodeChange<CustomNodeType>[]) => {
     setNodes((prevNodes) => applyNodeChanges(nds, prevNodes));
   };
 
@@ -69,29 +75,36 @@ const ReactFlowPlayground = () => {
     //   return applyEdgeChanges([edge], prevEdges);
     // });
 
-    setEdges((prevEdges) => addEdge(connection, prevEdges));
+    setEdges((prevEdges) =>
+      addEdge({ ...connection, animated: true }, prevEdges)
+    );
   };
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <Box style={{ width: "100vw", height: "100vh" }}>
       <ReactFlow
+        defaultEdgeOptions={{ type: "custom-edge" }}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         nodes={nodes}
         edges={edges}
+        fitView
         // disableKeyboardA11y
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        // colorMode="dark"
       >
         <Controls />
 
         <Background
+          // bgColor="black"
           // variant={BackgroundVariant.Lines}
           gap={12}
           size={1}
         />
       </ReactFlow>
-    </div>
+    </Box>
   );
 };
 

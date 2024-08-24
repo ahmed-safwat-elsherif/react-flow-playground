@@ -1,4 +1,3 @@
-import React, { useCallback, useState } from "react";
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -15,7 +14,7 @@ const styles = {
 
 export type CustomNodeType = Node<
   {
-    value: string;
+    value: string | number;
   },
   "custom-node"
 >;
@@ -24,11 +23,11 @@ const CustomNode = (props: NodeProps<CustomNodeType>) => {
   const { data: { value } = {} } = props;
   return (
     <Box sx={styles.root} className="test">
-      <Handle type="target" position={Position.Top} />
-      <Stack justifyContent="center" alignItems="center">
+      <Handle type="source" position={Position.Right} />
+      <Stack justifyContent="center" alignItems="center" height="100%">
         <Box component="span">{value}</Box>
       </Stack>
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="target" position={Position.Left} />
     </Box>
   );
 };
